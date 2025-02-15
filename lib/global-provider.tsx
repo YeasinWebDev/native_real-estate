@@ -6,14 +6,14 @@ interface User{
     $id: string;
     name: string;
     email: string;
-    avatar?: string ;
+    avater?: string ;
 }
 
 interface GlobalContextType {
     isLoggedIn: boolean;
     user: User | null,
     loading: boolean;
-    refetch: (newParams?:Record<string, string | number>) => Promise<void>
+    refetch: any
 }
 
 const globalContext = createContext<GlobalContextType | undefined>(undefined);
