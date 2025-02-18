@@ -1,11 +1,16 @@
 import { Cards, FeaturedCards } from "@/components/Cards";
+import Filter from "@/components/Filter";
+import NoResult from "@/components/NoResult";
 import Search from "@/components/Search";
 import icons from "@/constants/icons";
 import images from "@/constants/images";
+import { getLatestProperties, getProperties } from "@/lib/appwrite";
 import { useGlobalContext } from "@/lib/global-provider";
-import { Link } from "expo-router";
-import { useState } from "react";
+import { useAppwrite } from "@/lib/useAppwrite";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   ScrollView,
@@ -16,11 +21,40 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const data = Array(4).fill(null);
 
 export default function Index() {
   const { user } = useGlobalContext();
-  const [selected, setSelected] = useState("All");
+  const parames = useLocalSearchParams<{ query?: string; filter?: string }>()
+
+  const { data: latestProperties, loading: latestPropertiesLoading } =
+    useAppwrite({
+      fn: getLatestProperties,
+    });
+
+  const {
+    data: properties,
+    loading,
+    refetch,
+  } = useAppwrite({
+    fn: getProperties,
+    params: {
+      filter: parames.filter!,
+      query: parames.query!,
+      limit: 6,
+    },
+    skip: true,
+  });
+
+  useEffect(() => {
+    refetch({
+      filter: parames.filter!,
+      query: parames.query!,
+      limit: 6,
+    });
+  }, [parames.filter, parames.query]);
+
+  const handleCardPress = (id: string) => router.push(`/properties/${id}`);
+
 
   return (
     <ScrollView>
@@ -101,11 +135,38 @@ export default function Index() {
             </TouchableOpacity>
           </View>
         </View>
-        <View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <FeaturedCards />
-            <FeaturedCards />
-          </ScrollView>
+        <View
+          style={{
+            width: "100%",
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <FlatList
+            data={latestProperties}
+            renderItem={({ item }) => (
+              <FeaturedCards
+                item={item}
+                onPress={() => handleCardPress(item?.$id)}
+              />
+            )}
+            keyExtractor={(item) => item.$id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            ListEmptyComponent={
+              latestPropertiesLoading ? (
+                <ActivityIndicator
+                  size="large"
+                  style={{
+                    marginTop: 5,
+                  }}
+                />
+              ) : (
+                <NoResult />
+              )
+            }
+          />
         </View>
 
         {/* Recommendation */}
@@ -140,44 +201,30 @@ export default function Index() {
             </TouchableOpacity>
           </View>
         </View>
-        <View style={{ marginVertical: 14, marginInline: 10 }}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContainer}
-          >
-            {categories.map((category, index) => (
-              <TouchableOpacity
-                key={index}
-                style={[
-                  styles.tab,
-                  selected === category ? styles.selectedTab : null,
-                ]}
-                onPress={() => setSelected(category)}
-              >
-                <Text
-                  style={[
-                    styles.tabText,
-                    selected === category ? styles.selectedTabText : null,
-                  ]}
-                >
-                  {category}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
+        <Filter/>
 
         <View style={{ marginHorizontal: 20 }}>
           <FlatList
-            data={data}
+            data={properties}
             numColumns={2}
             keyExtractor={(_, index) => index.toString()}
-            renderItem={() => (
+            renderItem={({ item }) => (
               <View style={{ margin: 12 }}>
-                <Cards />
+                <Cards item={item} />
               </View>
             )}
+            ListEmptyComponent={
+              loading ? (
+                <ActivityIndicator
+                  size="large"
+                  style={{
+                    marginTop: 5,
+                  }}
+                />
+              ) : (
+                <NoResult />
+              )
+            }
           />
         </View>
       </SafeAreaView>
@@ -185,7 +232,7 @@ export default function Index() {
   );
 }
 
-const categories = ["All", "House", "Villa", "Apartments", "Other"];
+
 
 const styles = StyleSheet.create({
   header: {
@@ -205,34 +252,12 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     marginRight: 10,
-    borderRadius:50,
-    objectFit:'cover'
+    borderRadius: 50,
+    objectFit: "cover",
   },
   headerIcon: {
     width: 26,
     height: 26,
   },
-  scrollContainer: {
-    paddingHorizontal: 10,
-  },
-  tab: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#d0d0d0",
-    backgroundColor: "#f8f9fc",
-    marginRight: 10,
-  },
-  selectedTab: {
-    backgroundColor: "#0066ff",
-    borderColor: "#0066ff",
-  },
-  tabText: {
-    fontSize: 16,
-    color: "#333",
-  },
-  selectedTabText: {
-    color: "#fff",
-  },
+  
 });

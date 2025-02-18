@@ -5,13 +5,14 @@ import icons from "@/constants/icons";
 
 interface Props {
   onPress?: () => void;
+  item:any
 }
 
-export const FeaturedCards = ({ onPress }: Props) => {
+export const FeaturedCards = ({ onPress,item }: Props) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.featuredCards}>
       <Image
-        source={images.japan}
+        source={{uri:item?.image}}
         style={{
           objectFit: "cover",
           width: "100%",
@@ -45,7 +46,7 @@ export const FeaturedCards = ({ onPress }: Props) => {
             marginTop: 2,
           }}
         >
-          4.8
+          {item?.rating}
         </Text>
       </View>
 
@@ -64,13 +65,13 @@ export const FeaturedCards = ({ onPress }: Props) => {
             color: "#fff",
           }}
         >
-          Merialla Villa
+          {item?.name}
         </Text>
-        <Text
+       <Text
           style={{ fontFamily: "Rubik-Regular", fontSize: 16, color: "#fff" }}
         >
-          New York, US
-        </Text>
+          {item?.address}
+        </Text> 
         <View
           style={{
             flexDirection: "row",
@@ -82,7 +83,7 @@ export const FeaturedCards = ({ onPress }: Props) => {
           <Text
             style={{ fontFamily: "Rubik-Bold", fontSize: 20, color: "#fff" }}
           >
-            $12219
+            ${item?.price}
           </Text>
           <Image
             style={{ width: 22, height: 22, objectFit: "cover" }}
@@ -94,7 +95,7 @@ export const FeaturedCards = ({ onPress }: Props) => {
   );
 };
 
-export const Cards = () => {
+export const Cards = ({item}:any) => {
   return (
     <TouchableOpacity
       style={{
@@ -112,7 +113,7 @@ export const Cards = () => {
       }}
     >
       <Image
-        source={images.japan}
+        source={{uri:item?.image}}
         style={{
           objectFit: "cover",
           width: 159,
@@ -128,7 +129,7 @@ export const Cards = () => {
             color: "#000",
           }}
         >
-          Merialla Villa
+          {item?.name}
         </Text>
         <Text
           style={{
@@ -137,7 +138,7 @@ export const Cards = () => {
             color: "#8C8E98",
           }}
         >
-          New York, US
+          {item?.address}
         </Text>
         <View>
           <Text
@@ -147,7 +148,7 @@ export const Cards = () => {
               color: "#0061FF",
             }}
           >
-            $12219
+            ${item?.price}
           </Text>
         </View>
       </View>
