@@ -171,6 +171,86 @@ export const Cards = ({item}:any) => {
     </TouchableOpacity>
   );
 };
+export const ExploreCards = ({item,handleCardPress}:any) => {
+  return (
+    <TouchableOpacity
+    onPress={() => handleCardPress(item?.$id)}
+      style={{
+        width: '100%',
+        height: 128,
+        paddingHorizontal: 14,
+        paddingVertical: 15,
+        backgroundColor: "#fff",
+        shadowColor: "#000",
+        shadowOpacity: 0.35,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 4,
+        elevation: 5,
+        borderRadius: 10,
+        flexDirection:'row'
+      }}
+    >
+      <Image
+        source={{uri:item?.image}}
+        style={{
+          objectFit: "cover",
+          width: 100,
+          height: 100,
+          borderRadius: 10,
+          marginRight:10
+        }}
+      />
+      <View style={{ marginTop: 10 }}>
+        <Text
+          style={{
+            fontFamily: "Rubik-SemiBold",
+            fontSize: 16,
+            color: "#000",
+          }}
+        >
+          {item?.name}
+        </Text>
+        <Text
+          style={{
+            fontFamily: "Rubik-Regular",
+            fontSize: 12,
+            color: "#8C8E98",
+          }}
+        >
+          {item?.address}
+        </Text>
+        <View>
+          <Text
+            style={{
+              fontFamily: "Rubik-SemiBold",
+              fontSize: 16,
+              color: "#0061FF",
+              marginTop:20
+            }}
+          >
+            ${item?.price}
+          </Text>
+        </View>
+      </View>
+      <View style={[styles.starContainer, {top:30,right:20}]}>
+        <Image
+          source={icons.star}
+          style={{ width: 15, height: 15, objectFit: "cover" }}
+        />
+        <Text
+          style={{
+            fontSize: 12,
+            color: "#246BFD",
+            fontFamily: "Rubik-Bold",
+            marginTop: 2,
+          }}
+        >
+          {item?.rating}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   featuredCards: {
