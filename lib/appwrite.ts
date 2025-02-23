@@ -115,34 +115,47 @@ export async function getProperties({
   limit?: number;
 }) {
   try {
-    const buildQuery = [Query.orderDesc("$createdAt")]
+    const buildQuery = [Query.orderDesc("$createdAt")];
     if (filter && filter !== "All") {
-      buildQuery.push(Query.equal("type",filter));
+      buildQuery.push(Query.equal("type", filter));
     }
 
-    if(query){
+    if (query) {
       buildQuery.push(
         Query.or([
-          Query.search("name",query),
-          Query.search('address',query),
-          Query.search('type',query),
+          Query.search("name", query),
+          Query.search("address", query),
+          Query.search("type", query),
         ])
-      )
+      );
     }
 
     if (limit) {
       buildQuery.push(Query.limit(limit));
     }
-    
+
     const result = await databases.listDocuments(
       config.databaseId!,
       config.propertiesCollectionId!,
       buildQuery
-    )
+    );
     return result.documents;
-
   } catch (error) {
     console.log(error);
     return [];
+  }
+}
+
+export async function getPropertyById({id}: {id:string}) {
+  try {
+    const result = await databases.getDocument(
+      config.databaseId!,
+      config.propertiesCollectionId!,
+      id
+    );
+    return result;
+  } catch (error) {
+    console.error(error);
+    return null;
   }
 }

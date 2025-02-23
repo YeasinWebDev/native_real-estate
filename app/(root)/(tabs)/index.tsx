@@ -173,6 +173,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: "Rubik-SemiBold",
     lineHeight: 24,
+    marginBottom:15
   },
   seeAll: {
     fontSize: 16,
